@@ -3,6 +3,8 @@
 module Log where
 
 import Control.Applicative
+import Data.List   
+import Data.Char
 
 data MessageType = Info
                  | Warning
@@ -18,6 +20,25 @@ data LogMessage = LogMessage MessageType TimeStamp String
 data MessageTree = Leaf
                  | Node MessageTree LogMessage MessageTree
   deriving (Show, Eq)
+
+getNumber :: String -> TimeStamp
+getNumber (x) = read x :: Int
+
+
+getComment :: [String] -> String
+getComment (x) = unwords x
+
+parseMessage :: String -> LogMessage
+parseMessage (x) = parseMessageWords(words(x))
+
+
+
+parseMessageWords :: [String]-> LogMessage
+parseMessageWords ("I":x:xs) = LogMessage Info (getNumber(x)) (getComment(xs))
+parseMessageWords ("W":x:xs) = LogMessage Warning (getNumber(x)) (getComment(xs))
+parseMessageWords ("E":y:x:xs) = LogMessage (Error (getNumber(y))) (getNumber(x)) (getComment(xs))
+parseMessageWords (x) = Unknown (getComment(x))
+
 
 -- | @testParse p n f@ tests the log file parser @p@ by running it
 --   on the first @n@ lines of file @f@.

@@ -31,13 +31,19 @@ getComment (x) = unwords x
 parseMessage :: String -> LogMessage
 parseMessage (x) = parseMessageWords(words(x))
 
-
-
 parseMessageWords :: [String]-> LogMessage
 parseMessageWords ("I":x:xs) = LogMessage Info (getNumber(x)) (getComment(xs))
 parseMessageWords ("W":x:xs) = LogMessage Warning (getNumber(x)) (getComment(xs))
 parseMessageWords ("E":y:x:xs) = LogMessage (Error (getNumber(y))) (getNumber(x)) (getComment(xs))
 parseMessageWords (x) = Unknown (getComment(x))
+
+parseLogList :: [String] -> [LogMessage]
+parseLogList (x:xs) = parseMessage(x) : parseLogList(xs)
+parseLogList [] = []
+
+parseLogFile :: String -> [LogMessage]
+parseLogFile (x) =  parseLogList(lines x)
+
 
 
 -- | @testParse p n f@ tests the log file parser @p@ by running it
